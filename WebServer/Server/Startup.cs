@@ -46,6 +46,8 @@ namespace Server
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityConnection")));
             services.AddDefaultIdentity<BaseUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+            services.AddSingleton<IDepartmentRepository, DepartmentRepository>();
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
