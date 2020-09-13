@@ -1,41 +1,74 @@
-﻿using Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Server.Providers
 {
     public class DepartmentRepository : IDepartmentRepository
     {
-        public bool Add(Department model)
+        private AppDbContext _context;
+
+        public DepartmentRepository(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public bool Delete(long id)
+        public async Task<bool> Add(Department model)
         {
-            throw new NotImplementedException();
+            var result = await _context.Departments.SingleOrDefaultAsync(x => x.Name.ToLower() == model.Name.ToLower());
+            if (result != null)
+                return false;
+            _context.Departments.Add(model);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Department Get(long id)
+        public async Task<bool> Delete(long id)
         {
-            throw new NotImplementedException();
+            var result = await Get(id);
+            if (result == null)
+                return false;
+            _context.Departments.Remove(result);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Department GetByName(string name)
+        public async Task<Department> Get(long id)
         {
-            throw new NotImplementedException();
+            return await _context.Departments.SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public int GetCount(string name)
+        public async Task<List<Department>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.Departments.ToListAsync();
         }
 
-        public bool Update(long id, Department model)
+        public async Task<Department> GetByName(string name)
         {
-            throw new NotImplementedException();
+            return await _context.Departments.SingleOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
+        }
+
+        public async Task<int> GetCount(string name)
+        {
+            var result = await GetByName(name);
+            if (result == null)
+                return -1;
+            return _context.Employees.Where(x => x.Department.Name.ToLower() == name.ToLower()).Count();
+
+        }
+
+        public async Task<bool> Update(long id, Department model)
+        {
+            var result = await Get(id);
+            if (result == null)
+                return false;
+            _context.Entry(model).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

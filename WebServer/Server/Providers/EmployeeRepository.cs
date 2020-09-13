@@ -1,36 +1,66 @@
-﻿using Server.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Server.Providers
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        public bool Add(Employee model)
+        private AppDbContext _context;
+
+        public EmployeeRepository(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public bool Delete(long id)
+        public async Task<bool> Add(Employee model)
         {
-            throw new NotImplementedException();
+            var result = await _context.Employees.SingleOrDefaultAsync(x => x.Email == model.Email);
+            if (result != null)
+                return false;
+            _context.Employees.Add(model);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Employee Get(long id)
+        public async Task<bool> Delete(long id)
         {
-            throw new NotImplementedException();
+            var result = await Get(id);
+            if (result == null)
+                return false;
+            _context.Employees.Remove(result);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Department GetDepartment(long id)
+        public async Task<Employee> Get(long id)
         {
-            throw new NotImplementedException();
+            return await _context.Employees.SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public bool Update(long id, Employee model)
+        public async Task<List<Employee>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _context.Employees.Include(x => x.Department).ToListAsync();
+        }
+
+        public async Task<Department> GetDepartment(long id)
+        {
+            var result = await Get(id);
+            return result == null ? null : result.Department;
+        }
+
+        public async Task<bool> Update(long id, Employee model)
+        {
+            var result = await Get(id);
+            if (result == null)
+                return false;
+            _context.Entry(model).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

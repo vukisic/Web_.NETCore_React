@@ -7,9 +7,10 @@ namespace Server.Providers
 {
     public interface IRepository<T>
     {
-        bool Add(T model);
-        T Get(long id);
-        bool Update(long id, T model);
-        bool Delete(long id);
+        Task<bool> Add(T model);
+        Task<T> Get(long id);
+        Task<List<T>> GetAll();
+        Task<bool> Update(long id, T model);
+        Task<bool> Delete(long id);
     }
 }

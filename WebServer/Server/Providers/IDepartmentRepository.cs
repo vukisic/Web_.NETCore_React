@@ -8,7 +8,7 @@ namespace Server.Providers
 {
     public interface IDepartmentRepository : IRepository<Department>
     {
-        Department GetByName(string name);
-        int GetCount(string name);
+        Task<Department> GetByName(string name);
+        Task<int> GetCount(string name);
     }
 }

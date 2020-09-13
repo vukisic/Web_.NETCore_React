@@ -8,6 +8,6 @@ namespace Server.Providers
 {
     public interface IEmployeeRepository : IRepository<Employee>
     {
-        Department GetDepartment(long id);
+        Task<Department> GetDepartment(long id);
     }
 }
