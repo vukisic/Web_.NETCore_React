@@ -29,9 +29,18 @@ namespace Server.Providers
 
         public async Task<bool> Delete(long id)
         {
+            
             var result = await Get(id);
             if (result == null)
                 return false;
+            var employees = _context.Employees.Include(x=>x.Department).Where(x => x.Department.Id == id).ToList();
+            if(employees.Count > 0)
+            {
+                foreach (var item in employees)
+                {
+                    _context.Employees.Remove(item);
+                }
+            }
             _context.Departments.Remove(result);
             await _context.SaveChangesAsync();
             return true;
