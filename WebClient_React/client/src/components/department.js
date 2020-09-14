@@ -4,11 +4,12 @@ import Button from 'react-bootstrap/Button'
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 import {baseUrl} from '../utils/settings';
 import AddDepartmentModal from './addDepartmentModal';
+import EditDepartmentModal from './editDepartmentModal';
 
 class Department extends Component {
     constructor (props) {
         super(props);
-        this.state = {deps: [], addModalShow: false}
+        this.state = {deps: [], addModalShow: false, editModalShow: false}
     }
 
     componentDidMount() {
@@ -31,6 +32,26 @@ class Department extends Component {
         this.setState({addModalShow: false});
     }
 
+    
+    editModalClose() {
+        this.setState({editModalShow: false});
+    }
+
+    remove(id){
+        fetch(baseUrl + '/departments/delete/' + id,{
+            method: 'DELETE',
+            headers: {
+                'Accept':'application/json',
+                'Content-Type':'application/json',
+            }
+        }).then(res => res.json())
+        .then((result)=> {
+           alert(result);
+        }, (error) => {
+            alert(error);
+        });
+    }
+
     render() {
         return (
             <div className="container">
@@ -40,6 +61,7 @@ class Department extends Component {
                             <th>Id</th>
                             <th>Name</th>
                             <th>Main Location</th>
+                            <th>Options</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,6 +71,11 @@ class Department extends Component {
                                 <td>{dep.id}</td>
                                 <td>{dep.name}</td>
                                 <td>{dep.mainLocation}</td>
+                                <td>
+                                    <Button variant="danger" className="btm-sm mr-3" onClick={() => this.remove(dep.id)}>Delete</Button>
+                                    <Button variant="warning" className="btm-sm mr-3" onClick={() => this.setState({editModalShow: true, name: dep.name, id: dep.id, mainLication: dep.mainLocation})}>Modify</Button>
+                                    <EditDepartmentModal department={{name: this.state.name, id: this.state.id, mainLocation: this.state.mainLication}} onHide={() => this.editModalClose()} show = {this.state.editModalShow} />
+                                </td>
                             </tr>
                         ))}
                     </tbody>

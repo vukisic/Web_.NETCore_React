@@ -75,6 +75,9 @@ namespace Server.Providers
             var result = await Get(id);
             if (result == null)
                 return false;
+            var sameName = await GetByName(model.Name);
+            if (sameName != null)
+                return false;
             _context.Entry(model).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return true;

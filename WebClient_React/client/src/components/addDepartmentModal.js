@@ -47,7 +47,7 @@ function AddDepartmentModal(props) {
                     <Form onSubmit={(event) => handleSubmit(event)}>
                         <Form.Group controlId="name">
                             <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" name="name" required placeholder="Some Name" />
+                            <Form.Control type="text"  name="name" required placeholder="Some Name" />
                         </Form.Group>
                         <Form.Group controlId="mainLocation">
                             <Form.Label>MainLocation</Form.Label>
