@@ -39,7 +39,7 @@ namespace Server.Providers
 
         public async Task<Employee> Get(long id)
         {
-            return await _context.Employees.SingleOrDefaultAsync(x => x.Id == id);
+            return await _context.Employees.Include(x=>x.Department).SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<Employee>> GetAll()
